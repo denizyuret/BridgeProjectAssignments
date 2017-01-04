@@ -1,5 +1,5 @@
 function valuefunccalc(transmatrix, reward, gamma, statenum)
-      return inv(eye(statenum) - gamma1*transmatrix)*reward
+      return inv(eye(statenum) - gamma*transmatrix)*reward
 end
 
 # Value Function Calculation for Grid Example
@@ -8,7 +8,7 @@ transmatrix1= [0 0.5 0 0 0 0.5 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0;
               0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0;
               0 (1/3) 0 (1/3) 0 0 0 (1/3) 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0;
               0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0;
-              0 0 0 0 0.5 0 0 0 0.5 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0;
+              0 0 0 0.5 0 0 0 0 0.5 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0;
               (1/3) 0 0 0 0 0 (1/3) 0 0 (1/3) 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0;
               0 0.25 0 0 0 0.25 0 0.25 0 0 0.25 0 0 0 0 0 0 0 0 0 0 0 0 0 0;
               0 0 0.25 0 0 0 0.25 0 0.25 0 0 0.25 0 0 0 0 0 0 0 0 0 0 0 0 0;
@@ -70,12 +70,233 @@ valuefunccalc(transmatrix2, reward2, gamma2, 27)
 # Value Function Calculation for Student Example
 
 transmatrix3= [0 0.5 0 0 0 0.5 0;
-               0 0 0.8 0 0 0 0.2;
-               0 0 0 0.6 0.4 0 0;
+               0 0 0.5 0 0 0 0.5;
+               0 0 0 0.5 0.5 0 0;
                0 0 0 0 0 0 1;
-               0.2 0.4 0.4 0 0 0 0;
-               0.1 0 0 0 0 0.9 0;
-               0 0 0 0 0 0 1;]
+               (1/3) (1/3) (1/3) 0 0 0 0;
+               0.5 0 0 0 0 0.5 0;
+               0 0 0 0 0 0 0;]
 reward3= [-2, -2, -2, 10, 1, -1, 0]
 gamma3= 0.9
 valuefunccalc(transmatrix3, reward3, gamma3, 7)
+
+# Sampling for Student Example
+
+function nextsteparray3(nextstep)
+  if nextstep==[0]
+    return [1,5]
+  elseif nextstep==[1]
+    return [2,6]
+  elseif nextstep==[2]
+    return [3,4]
+  elseif nextstep==[3]
+    return [6]
+  elseif nextstep==[4]
+    return [0,1,2]
+  else
+    return [0,5]
+  end
+end
+
+function findreward3(index)
+  return reward3[index+1]
+end
+
+function montecarlo3(first, nextsteparray, gamma)
+  rng=RandomDevice()
+  reward= findreward3(first)
+  nextstep=rand(rng,nextsteparray,1)
+  if nextstep==[6]
+    return reward
+  else
+    return reward+(gamma*montecarlo3(nextstep, nextsteparray3(nextstep),gamma))
+  end
+end
+
+function averageSamples3(state, nextstatearray, gamma)
+    count=0
+    total=0
+    for j = 1:10000
+      total=total+montecarlo3(state,nextstatearray,gamma)
+      count=count+1
+    end
+    return total/count
+end
+
+[averageSamples3(0, [1,5], gamma3),
+averageSamples3(1, [2,6], gamma3),
+averageSamples3(2, [3,4], gamma3),
+averageSamples3(3, [6], gamma3),
+averageSamples3(4, [0,1,2], gamma3),
+averageSamples3(5, [0,5], gamma3)]
+
+# Sampling for Maze Example
+
+function nextsteparray2(nextstep)
+  if nextstep==[0]
+    return [1]
+  elseif nextstep==[1]
+    return [2,17]
+  elseif nextstep==[2]
+    return [1,3]
+  elseif nextstep==[3]
+    return [2,4]
+  elseif nextstep==[4]
+    return [3,5]
+  elseif nextstep==[5]
+    return [4,6,7]
+  elseif nextstep==[6]
+    return [4]
+  elseif nextstep==[7]
+    return [4,8]
+  elseif nextstep==[8]
+    return [7,9]
+  elseif nextstep==[9]
+    return [8,10]
+  elseif nextstep==[10]
+    return [9,11]
+  elseif nextstep==[11]
+    return [10,12]
+  elseif nextstep==[12]
+    return [11,13]
+  elseif nextstep==[13]
+    return [12,14]
+  elseif nextstep==[14]
+    return [13,15]
+  elseif nextstep==[15]
+    return [14,16]
+  elseif nextstep==[17]
+    return [1,18]
+  elseif nextstep==[18]
+    return [17,19]
+  elseif nextstep==[19]
+    return [18,20]
+  elseif nextstep==[20]
+    return [19,21]
+  elseif nextstep==[21]
+    return [20,22]
+  elseif nextstep==[22]
+    return [21,23,24]
+  elseif nextstep==[23]
+    return [22]
+  elseif nextstep==[24]
+    return [22,25]
+  elseif nextstep==[25]
+    return [23,26]
+  else
+    return [25]
+  end
+end
+
+function findreward2(index)
+  return reward2[index+1]
+end
+
+function montecarlo2(first, nextsteparray, gamma)
+  rng=RandomDevice()
+  reward= findreward2(first)
+  nextstep=rand(rng,nextsteparray,1)
+  if first == 16
+    return -1
+  end
+  if nextstep==[16]
+    return reward
+  else
+    return reward+(gamma*montecarlo2(nextstep, nextsteparray2(nextstep),gamma))
+  end
+end
+
+function averageSamples2(state, nextstatearray, gamma)
+    count=0
+    total=0
+    for j = 1:1000
+      total=total+montecarlo2(state,nextstatearray,gamma)
+      count=count+1
+    end
+    return total/count
+end
+
+averageSamples2(0,[1],gamma2)
+
+#Sampling for Grid Example
+
+function nextsteparray1(nextstep)
+  if nextstep==[0]
+    return [1,5]
+  elseif nextstep==[1]
+    return [16]
+  elseif nextstep==[2]
+    return [1,3,7]
+  elseif nextstep==[3]
+    return [13]
+  elseif nextstep==[4]
+    return [3,9]
+  elseif nextstep==[5]
+    return [0,6,10]
+  elseif nextstep==[6]
+    return [1,5,7,11]
+  elseif nextstep==[7]
+    return [2,6,8,12]
+  elseif nextstep==[8]
+    return [3,7,9,13]
+  elseif nextstep==[9]
+    return [4,8,14]
+  elseif nextstep==[10]
+    return [5,11,15]
+  elseif nextstep==[11]
+    return [6,10,12,16]
+  elseif nextstep==[12]
+    return [7,11,13,17]
+  elseif nextstep==[13]
+    return [8,12,14,18]
+  elseif nextstep==[14]
+    return [9,13,19]
+  elseif nextstep==[15]
+    return [10,16,20]
+  elseif nextstep==[16]
+    return [11,15,17,21]
+  elseif nextstep==[17]
+    return [12,16,18,22]
+  elseif nextstep==[18]
+    return [13,17,19,23]
+  elseif nextstep==[19]
+    return [14,18,24]
+  elseif nextstep==[20]
+    return [15,21]
+  elseif nextstep==[21]
+    return [16,20,22]
+  elseif nextstep==[22]
+    return [17,21,23]
+  elseif nextstep==[23]
+    return [18,22,24]
+  else
+    return [19,23]
+  end
+end
+
+function findreward1(index)
+  return reward1[index+1]
+end
+
+function montecarlo1(first, nextsteparray, gamma)
+  rng=RandomDevice()
+  reward= findreward1(first)
+  nextstep=rand(rng,nextsteparray,1)
+  for j= 1:30
+    reward=reward+(gamma^j)findreward1(nextstep)
+    nextstep=rand(rng,nextsteparray1(nextstep),1)
+  end
+    return reward
+end
+
+function averageSamples1(state, nextstatearray, gamma)
+    count=0
+    total=0
+    for j = 1:1000
+      total=total+montecarlo1(state,nextstatearray,gamma)
+      count=count+1
+    end
+    return total/count
+end
+
+averageSamples1(1,[16],gamma1)
